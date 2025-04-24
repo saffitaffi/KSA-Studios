@@ -1,0 +1,189 @@
+html {
+    scroll-behavior: smooth;
+}
+
+* {
+    margin: 10;
+    padding: 10;
+    box-sizing: border-box;
+}
+  
+
+#top{
+    text-decoration: underline;
+    color: #FF00A1;
+}
+
+#bottom{
+    text-decoration: underline;
+    color: #FF00A1;
+}
+
+.common{
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.header{
+    background-color: #3C1646;
+    color: #C5A2F9;
+    height: 100px;
+    line-height: 100px;
+}
+
+.mainbody{
+    background-color: #fff3fe;
+}
+
+.footer{
+    position:fixed;
+    background-color: #3C1646;
+    color:#fff3fe;
+    bottom:0px;
+    left:5px;
+    right:5px;
+    height: 25px;
+    line-height: 25px;
+}
+
+img{
+    display:block;
+    width:50%;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.image-row {
+    display: flex;
+    justify-content: space-between; /* or center / space-around */
+    align-items: center;
+    gap: 8px; /* space between images */
+  }
+
+  .image-row img {
+    width: auto; /* or whatever size you want */
+    height: 350px;
+    object-fit: contain;
+  }
+
+  .small-images img {
+    height: 250px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  .super-small-images img {
+    height: 100px;
+    width: auto;
+    object-fit: contain;
+  }
+  
+  /* Large images */
+  .large-images img {
+    height: 200px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  figcaption {
+    font-size: 0.9em;
+    color: #3C1646;
+    margin-top: 5px;
+  }
+
+nav{
+    text-align: right;
+    background-color: #C5A2F9;
+    padding:15px;
+}
+
+nav a{
+    color:#3C1646;
+    text-decoration: none;
+    padding: 15px;
+    font-weight: bold;
+}
+
+nav a:hover{
+    color: #FF00A1;
+    background-color: #3C1646;
+}
+
+.centered-list{
+    padding-left: 0;
+    list-style-position: outside;
+    margin: 0 auto;
+    display: table;
+    text-align: left;
+    border: 2px solid #3C1646;
+}
+
+.button-link {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #3C1646;
+    color: #FF00A1;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+  
+  .button-link:hover {
+    background-color: #FF00A1;
+    color: #3C1646;
+  }
+
+  .button-link-itty{
+    display: inline-block;
+    padding: 2px 2px;
+    background-color: #3C1646;
+    color: #FF00A1;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+  }
+  
+  .button-link:hover {
+    background-color: #FF00A1;
+    color: #3C1646;
+  }
+
+  .bordered-text {
+    border: 2px solid #3C1646;
+    padding: 50px;
+    width: 60%;
+    border-style: 5px; /* optional: rounded corners */
+    background-color: #fbd3ff; /* optional: light background */
+    margin: 20px auto; 
+  }
+
+  body{
+    
+    background-image: url('images/Dusk Woods.png');
+    background-size: cover;        /* cover, contain, or a specific size like 100% 100% */
+    background-position: center;   /* top, center, bottom, etc. */
+    background-repeat: no-repeat;  /* no-repeat, repeat, repeat-x, repeat-y */
+    height: auto;                 /* ensures full screen height */
+    margin: 0;
+    
+    color:rgb(48, 0, 49);
+    background-color: #3C1646;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    border: 2px solid #C5A2F9;
+    padding: 10px;
+    overflow-x: hidden;
+}
+
+.emphasizedText{
+    font-style: italic, bold;
+    color:rgb(224, 50, 123)
+}
+
+hr {
+    border: none;
+    height: 3px;
+    background-color: #3C1646;
+    margin: 40px 0;
+  }
+  

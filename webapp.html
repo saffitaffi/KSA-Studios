@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Running Jump Game</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+    body {
+      background: #3C1646;
+      overflow: hidden;
+    }
+    #game {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: url('assets/bg_game.png') no-repeat center/cover;
+    }
+    #player {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 100px;
+      height: 100px;
+      background: url('assets/pixvy 1.png') no-repeat center/contain;
+    }
+    #player-hitbox {
+      position: absolute;
+      bottom: 20px;
+      left: 50px;
+      width: 50px;
+      height: 50px;
+      pointer-events: none;
+    }
+    .tree {
+      position: absolute;
+      bottom: 20px;
+      width: 30px;
+      border-radius: 5px;
+    }
+    #message {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2em;
+      color: #FF00A1;
+      display: none;
+      text-align: center;
+    }
+    #message .btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      background-color: #3C1646;
+      color: #FF00A1;
+    }
+    #message .btn:hover {
+      background-color: #FF00A1;
+      color: #3C1646;
+    }
+    #timer {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-size: 1.5em;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="game">
+    <div id="player"></div>
+    <div id="player-hitbox"></div>
+    <div id="message"></div>
+    <div id="timer">Time: 0s</div>
+  </div>
+
+  <audio id="bg-music" src="assets/audio/VVFA - Elevator Music.mp3" loop></audio>
+  <audio id="win-sound" src="assets/audio/TWAD - Victory.mp3"></audio>
+  <audio id="gameover-sound" src="assets/audio/Game Over.mp3"></audio>
+
+  <script>
+    const game = document.getElementById("game");
+    const player = document.getElementById("player");
+    const playerHitbox = document.getElementById("player-hitbox");
+    const message = document.getElementById("message");
+    const timerDisplay = document.getElementById("timer");
+    const bgMusic = document.getElementById("bg-music");
+    const winSound = document.getElementById("win-sound");
+    const gameoverSound = document.getElementById("gameover-sound");
+
+    let isJumping = false;
+    let alive = true;
+    let timeAlive = 0;
+    let started = false;
+    let treeSpeed = 5;
+    let treeIntervalMin = 1000;
+    let treeIntervalMax = 2000;
+
+    let animationFrame = 1;
+    let animationInterval;
+
+    function syncHitbox() {
+      playerHitbox.style.bottom = player.style.bottom;
+    }
+
+    function startIdleAnimation() {
+      if (animationInterval) clearInterval(animationInterval);
+      animationInterval = setInterval(() => {
+        if (!isJumping) {
+          animationFrame = animationFrame % 7 + 1;
+          player.style.backgroundImage = `url('assets/pixvy ${animationFrame}.png')`;
+        }
+      }, 200);
+    }
+
+    function jump() {
+      if (isJumping || !alive) return;
+      isJumping = true;
+      player.style.transition = playerHitbox.style.transition = "bottom 0.4s ease-out";
+      player.style.bottom = playerHitbox.style.bottom = "200px";
+      player.style.backgroundImage = "url('assets/pixvy 8.png')";
+
+      setTimeout(() => {
+        player.style.transition = playerHitbox.style.transition = "bottom 0.4s ease-in";
+        player.style.bottom = playerHitbox.style.bottom = "20px";
+        player.style.backgroundImage = "url('assets/pixvy 9.png')";
+
+        setTimeout(() => {
+          isJumping = false;
+          startIdleAnimation();
+        }, 400);
+      }, 400);
+    }
+
+    function spawnTree() {
+      if (!alive) return;
+      const tree = document.createElement("div");
+      tree.classList.add("tree");
+      const height = 40 + Math.floor(Math.random() * 60);
+      tree.style.height = `${height}px`;
+      tree.style.left = "100vw";
+
+      // Choose the correct tree image based on height
+      let treeImg = 'tree 4.png';
+      if (height >= 90) treeImg = 'tree 1.png';
+      else if (height >= 75) treeImg = 'tree 2.png';
+      else if (height >= 60) treeImg = 'tree 3.png';
+
+      tree.style.background = `url('assets/${treeImg}') no-repeat center/contain`;
+      game.appendChild(tree);
+
+      let treeInterval = setInterval(() => {
+        let left = parseInt(window.getComputedStyle(tree).left);
+        if (!alive) {
+          clearInterval(treeInterval);
+          tree.remove();
+          return;
+        }
+        if (left < -30) {
+          tree.remove();
+          clearInterval(treeInterval);
+        } else {
+          tree.style.left = `${left - treeSpeed}px`;
+
+          const hitboxRect = playerHitbox.getBoundingClientRect();
+          const treeRect = tree.getBoundingClientRect();
+          if (
+            hitboxRect.left < treeRect.right &&
+            hitboxRect.right > treeRect.left &&
+            hitboxRect.bottom > treeRect.top
+          ) {
+            gameOver();
+          }
+        }
+      }, 20);
+    }
+
+    function showMessage(text) {
+      message.innerHTML = `<div>${text}</div><br>
+        <button class='btn' onclick='location.reload()'>Restart</button>
+        <button class='btn' onclick='window.location.href="vvfa.html"'>Go Back</button>`;
+      message.style.display = "block";
+    }
+
+    function gameOver() {
+      alive = false;
+      game.style.backgroundImage = "url('assets/end_death.png')";
+      game.style.backgroundSize = "contain";
+      game.style.backgroundRepeat = "no-repeat";
+      game.style.backgroundPosition = "center";
+      bgMusic.pause();
+      gameoverSound.play();
+      player.style.display = "none";
+      playerHitbox.style.display = "none";
+      showMessage("Game Over!");
+    }
+
+    function winGame() {
+      alive = false;
+      game.style.backgroundImage = "url('assets/end_win.png')";
+      game.style.backgroundSize = "contain";
+      game.style.backgroundRepeat = "no-repeat";
+      game.style.backgroundPosition = "center";
+      bgMusic.pause();
+      winSound.play();
+      player.style.display = "none";
+      playerHitbox.style.display = "none";
+      showMessage("<span style='color:#3C1646'>You Win!</span>");
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        if (!started) {
+          bgMusic.play().catch(() => {});
+          started = true;
+        }
+        jump();
+      }
+    });
+
+    function startTreeSpawner() {
+      function spawnLoop() {
+        if (!alive) return;
+        spawnTree();
+
+        if (treeSpeed < 15) treeSpeed += 0.05;
+        if (treeIntervalMin < 200) treeIntervalMin += 2;
+        if (treeIntervalMax < 4000) treeIntervalMax += 4;
+
+        const delay = treeIntervalMin + Math.random() * (treeIntervalMax - treeIntervalMin);
+        setTimeout(spawnLoop, delay);
+      }
+      spawnLoop();
+    }
+    startTreeSpawner();
+    startIdleAnimation();
+
+    const syncInterval = setInterval(syncHitbox, 10);
+
+    const timeInterval = setInterval(() => {
+      if (!alive) return clearInterval(timeInterval);
+      timeAlive++;
+      timerDisplay.innerText = `Time: ${timeAlive}/60s`;
+      if (timeAlive >= 60) winGame();
+    }, 1000);
+  </script>
+</body>
+</html>
